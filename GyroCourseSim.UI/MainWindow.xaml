@@ -1,0 +1,260 @@
+﻿<Window x:Class="GyroCourseSim.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+        xmlns:local="clr-namespace:GyroCourseSim.UI"
+        xmlns:converters="clr-namespace:GyroCourseSim.UI.Converters"
+        Title="Симуляция гироскопической системы курса" 
+        Height="1000" Width="1600"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+    </Window.Resources>
+
+    <Window.DataContext>
+        <local:MainViewModel/>
+    </Window.DataContext>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Панель параметров -->
+        <GroupBox Header="Параметры симуляции" Grid.Row="0" Margin="0,0,0,10">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Основные параметры -->
+                <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                            Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15">
+                    <StackPanel Margin="0,0,30,0">
+                        <TextBlock Text="Время симуляции (с):" FontWeight="SemiBold"/>
+                        <TextBox Text="{Binding Parameters.TEnd, UpdateSourceTrigger=PropertyChanged}" 
+                                 Width="150" Margin="0,5,0,0" FontSize="14"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="0,0,30,0">
+                        <TextBlock Text="Шаг интегрирования (с):" FontWeight="SemiBold"/>
+                        <TextBox Text="{Binding Parameters.Dt, UpdateSourceTrigger=PropertyChanged}" 
+                                 Width="150" Margin="0,5,0,0" FontSize="14"/>
+                    </StackPanel>
+
+                    <StackPanel>
+                        <TextBlock Text="Коэффициент k_γ_ψ:" FontWeight="SemiBold"/>
+                        <TextBox Text="{Binding Parameters.KGammaPsi, UpdateSourceTrigger=PropertyChanged}" 
+                                 Width="150" Margin="0,5,0,0" FontSize="14"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Метод интегрирования -->
+                <GroupBox Grid.Row="1" Grid.Column="0" Header="Метод интегрирования" Margin="0,0,5,10">
+                    <StackPanel Margin="10">
+                        <RadioButton Content="Метод Эйлера" 
+                                     IsChecked="{Binding Parameters.IsEulerMethod}"
+                                     FontWeight="SemiBold" Margin="0,0,0,10"/>
+                        <RadioButton Content="Рунге-Кутта 2-го порядка (с коррекцией в средней точке)" 
+                                     IsChecked="{Binding Parameters.IsRungeKuttaMethod}"
+                                     FontWeight="SemiBold"/>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Режим управления -->
+                <GroupBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Header="Режим управления" Margin="0,0,0,10">
+                    <StackPanel Margin="10">
+                        <RadioButton Content="Автоматическое управление" 
+                                     IsChecked="{Binding Parameters.IsAutomaticMode}"
+                                     FontWeight="SemiBold" Margin="0,0,0,10"/>
+                        <RadioButton Content="Свободный самолёт (ручное отклонение рулей)" 
+                                     IsChecked="{Binding Parameters.IsFreeMode}"
+                                     FontWeight="SemiBold"/>
+
+                        <!-- Параметры демпфера (только для автоматического режима) -->
+                        <GroupBox Header="Демпфер (только для автоматического режима)" 
+                                  Margin="0,15,0,0" 
+                                  IsEnabled="{Binding Parameters.IsAutomaticMode}">
+                            <StackPanel Margin="10">
+                                <RadioButton Content="Демпфер включён (δₙ активен)" 
+                                             IsChecked="{Binding Parameters.IsDempferEnabled}"
+                                             FontWeight="SemiBold" Margin="0,0,0,10"/>
+                                <RadioButton Content="Отказ демпфера (δₙ = 0)" 
+                                             IsChecked="{Binding Parameters.IsDempferFailed}"
+                                             FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Параметры свободного режима -->
+                <GroupBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" 
+                          Header="Параметры свободного режима" 
+                          IsEnabled="{Binding Parameters.IsFreeMode}">
+                    <Grid Margin="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Margin="0,0,15,0">
+                            <TextBlock Text="Угол отклонения элеронов δₑ (град):" FontWeight="SemiBold"/>
+                            <TextBox Text="{Binding Parameters.DeZad, UpdateSourceTrigger=PropertyChanged}" 
+                                     Width="150" Margin="0,5,0,0" FontSize="14"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="0,0,15,0">
+                            <TextBlock Text="Угол отклонения руля напр. δₙ (град):" FontWeight="SemiBold"/>
+                            <TextBox Text="{Binding Parameters.DnZad, UpdateSourceTrigger=PropertyChanged}" 
+                                     Width="150" Margin="0,5,0,0" FontSize="14"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Время отклонения рулей (с):" FontWeight="SemiBold"/>
+                            <TextBox Text="{Binding Parameters.DeviationTime, UpdateSourceTrigger=PropertyChanged}" 
+                                     Width="150" Margin="0,5,0,0" FontSize="14"/>
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
+            </Grid>
+        </GroupBox>
+
+        <!-- Графики и панель выбора -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="250"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Большой график -->
+            <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="2" Margin="5">
+                <lvc:CartesianChart Series="{Binding CombinedSeries}"
+                                    XAxes="{Binding XAxes}"
+                                    YAxes="{Binding YAxesCombined}"
+                                    LegendPosition="Top"/>
+            </Border>
+
+            <!-- Панель выбора графиков -->
+            <Border Grid.Column="1" BorderBrush="Gray" BorderThickness="1" Margin="5" Background="#F5F5F5">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="10">
+                        <TextBlock Text="Выбор графиков" FontWeight="Bold" FontSize="16" Margin="0,0,0,15"/>
+
+                        <GroupBox Header="Углы" Margin="0,0,0,10">
+                            <StackPanel Margin="5">
+                                <CheckBox IsChecked="{Binding ShowGamma}" Margin="0,5">
+                                    <StackPanel>
+                                        <TextBlock Text="γ (крен)" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Угол крена" FontSize="10" Foreground="Gray"/>
+                                    </StackPanel>
+                                </CheckBox>
+
+                                <CheckBox IsChecked="{Binding ShowPsi}" Margin="0,5">
+                                    <StackPanel>
+                                        <TextBlock Text="ψ (курс)" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Угол курса" FontSize="10" Foreground="Gray"/>
+                                    </StackPanel>
+                                </CheckBox>
+
+                                <CheckBox IsChecked="{Binding ShowBeta}" Margin="0,5">
+                                    <StackPanel>
+                                        <TextBlock Text="β (скольжение)" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Угол скольжения" FontSize="10" Foreground="Gray"/>
+                                    </StackPanel>
+                                </CheckBox>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <GroupBox Header="Угловые скорости" Margin="0,0,0,10">
+                            <StackPanel Margin="5">
+                                <CheckBox IsChecked="{Binding ShowGammaDot}" Margin="0,5">
+                                    <StackPanel>
+                                        <TextBlock Text="γ' (ω_x)" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Угловая скорость крена" FontSize="10" Foreground="Gray"/>
+                                    </StackPanel>
+                                </CheckBox>
+
+                                <CheckBox IsChecked="{Binding ShowPsiDot}" Margin="0,5">
+                                    <StackPanel>
+                                        <TextBlock Text="ψ' (ω_y)" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Угловая скорость курса" FontSize="10" Foreground="Gray"/>
+                                    </StackPanel>
+                                </CheckBox>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <GroupBox Header="Управляющие поверхности" Margin="0,0,0,10">
+                            <StackPanel Margin="5">
+                                <CheckBox IsChecked="{Binding ShowDe}" Margin="0,5">
+                                    <StackPanel>
+                                        <TextBlock Text="δₑ (элероны)" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Отклонение элеронов" FontSize="10" Foreground="Gray"/>
+                                    </StackPanel>
+                                </CheckBox>
+
+                                <CheckBox IsChecked="{Binding ShowDn}" Margin="0,5">
+                                    <StackPanel>
+                                        <TextBlock Text="δₙ (руль направления)" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Отклонение руля" FontSize="10" Foreground="Gray"/>
+                                    </StackPanel>
+                                </CheckBox>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <Separator Margin="0,10"/>
+
+                        <Button Content="Выбрать все" Margin="0,5" Click="SelectAllGraphs"/>
+                        <Button Content="Снять все" Margin="0,5" Click="DeselectAllGraphs"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+
+        <!-- Панель управления и статус -->
+        <Grid Grid.Row="2" Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" 
+                    Content="Запустить симуляцию" 
+                    Command="{Binding RunSimulationCommand}"
+                    IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBooleanConverter}}"
+                    Width="150" Height="35" Margin="0,0,10,0"
+                    Background="#FF4CAF50" Foreground="White" FontWeight="Bold"/>
+
+            <Button Grid.Column="1" 
+                    Content="Очистить" 
+                    Command="{Binding ClearChartsCommand}"
+                    Width="100" Height="35" Margin="0,0,10,0"/>
+
+            <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                <TextBlock Text="{Binding StatusMessage}" FontWeight="Bold" Margin="10,0,0,5"/>
+                <TextBlock Margin="10,0,0,0">
+                    <Run Text="α_balance = "/>
+                    <Run Text="{Binding AlphaBalance, StringFormat=F4}" FontWeight="Bold" Foreground="Blue"/>
+                </TextBlock>
+            </StackPanel>
+
+            <ProgressBar Grid.Column="3" 
+                         Width="200" Height="20"
+                         IsIndeterminate="{Binding IsRunning}"
+                         Visibility="{Binding IsRunning, Converter={StaticResource BoolToVisibilityConverter}}"/>
+        </Grid>
+    </Grid>
+</Window>

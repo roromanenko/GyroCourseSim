@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36408.4 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GyroCourseSim", "GyroCourseSim\GyroCourseSim.csproj", "{1133CA45-487F-47B7-B128-046281844AFF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GyroCourseSim.UI", "GyroCourseSim.UI\GyroCourseSim.UI.csproj", "{B24E17A5-5AA8-4CA7-AE08-8D747B4DCB48}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1133CA45-487F-47B7-B128-046281844AFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1133CA45-487F-47B7-B128-046281844AFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1133CA45-487F-47B7-B128-046281844AFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1133CA45-487F-47B7-B128-046281844AFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B24E17A5-5AA8-4CA7-AE08-8D747B4DCB48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B24E17A5-5AA8-4CA7-AE08-8D747B4DCB48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B24E17A5-5AA8-4CA7-AE08-8D747B4DCB48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B24E17A5-5AA8-4CA7-AE08-8D747B4DCB48}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6A3AE16C-4758-4392-8AB4-E05B1F251CF4}
+	EndGlobalSection
+EndGlobal
